@@ -192,7 +192,7 @@ Inductive nat : Type :=
 
 (** これら三つの条件によって、[nat]が帰納的([Inductive])な方法で厳格に定義されています。この定義によって、式 [O]、式 [S O]、式  [S (S O)]、式 [S (S (S O))]...が全て[nat]に属する式であることが表されています。また同時に、[true]や[andb true false]、[S (S false)]が[nat]に属さないことも明確にされています。
 
-こうして定義された自然数[nat]をマターンマッチにかけることで、簡単な関数を書いてみましょう。例えば、一つ前の[nat]を返す関数は以下のよう書けます。
+こうして定義された自然数[nat]をパターンマッチにかけることで、簡単な関数を書いてみましょう。例えば、一つ前の[nat]を返す関数は以下のよう書けます。
  *)
 
 Definition pred (n : nat) : nat :=
@@ -307,12 +307,15 @@ Proof. simpl. reflexivity.  Qed.
     これをCoqでの定義に書き直しなさい。 *)
 
 Fixpoint factorial (n:nat) : nat :=
-  (* FILL IN HERE *) admit.
+  match n with
+    | O    => 1
+    | S n' => n * factorial(n')
+  end.
 
 Example test_factorial1:          (factorial 3) = 6.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_factorial2:          (factorial 5) = (mult 10 12).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (** ここで紹介する"notation"（表記法）という機能を使うことで、加算、減算、乗算のような数値を扱う式をずっと読みやすく、書きやすくすることができます。 *)
@@ -369,14 +372,14 @@ Proof. simpl. reflexivity.  Qed.
 注：[simpl]タクティックを使ってうまくいかない場合は、代わりに[compute]を試してください。それはよりうまく作られた[simpl]と言えるものですが、そもそもシンプルでエレガントな解が書けていれば、[simpl]で十分に評価できるはずです。 *)
 
 Definition blt_nat (n m : nat) : bool :=
-  (* FILL IN HERE *) admit.
+  andb (ble_nat n m) (negb (beq_nat n m)).
 
 Example test_blt_nat1:             (blt_nat 2 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_blt_nat2:             (blt_nat 2 4) = true.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_blt_nat3:             (blt_nat 4 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 
