@@ -458,7 +458,7 @@ Theorem plus_id_example : forall n m:nat,
 Proof.
   intros n m.   (* move both quantifiers into the context *)
   intros H.     (* move the hypothesis into the context *)
-  rewrite -> H. (* Rewrite the goal using the hypothesis *)
+  rewrite <- H. (* Rewrite the goal using the hypothesis *)
   reflexivity.  Qed.
 
 (** 証明の1行目は、∀（forall）がついた、つまり「あらゆる[n],[m]について」の部分をコンテキストに移しています。2行目は、[n = m]ならば、という仮定をコンテキストに写し、[H]という名前をこれに与えています。3行目は、ゴールになっている式([n + n = m + m])に仮定[H]の左側を右側にするような書き換えを施しています。
@@ -471,7 +471,11 @@ Proof.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o H0 H1.
+  rewrite H0.
+  rewrite H1.
+  reflexivity.
+Qed.  
 (** [] *)
 
 (** Admittedコマンドは、Coqに対して「この証明はあきらめたので、この定理はこれでいいことにしてください」と指示するものです。この機能は、より長い証明をする際に便利です。何か大きな論証をしようとする時、今のところ信用している補足的な命題を示したい時があります。そんな時、[Admitted]を使用すると、その命題を一時的に信用できることにして、それを踏み台にしてより大きな論証を進めることができるのです。そしてそれが完成したのち、あらためて保留していた命題の証明を埋めればいいのです。ただし注意して下さい。[admit]や[Admitted]を使用することは、一時的にドアを開けて、「全て形式的なチェックを受け証明済みの、信用するに足るCoqの世界」から、信用に値しない下界へ足を踏み出していることに他なりません。いつかは戻ってドアを閉めることがお約束です。*)
@@ -489,7 +493,10 @@ Proof.
 Theorem mult_1_plus : forall n m : nat,
   (1 + n) * m = m + (n * m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  simpl.
+  reflexivity.
+Qed.  
 (** [] *)
 
 
@@ -535,7 +542,12 @@ Proof.
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  destruct n as [| n'].
+  reflexivity.
+  reflexivity.
+Qed.
+
 (** [] *)
 
 
@@ -594,7 +606,24 @@ Proof.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c H.
+  destruct b.
+  Case "b = true".
+    destruct c.
+    SCase "c = true".
+      reflexivity.
+    SCase "c = false".
+      rewrite <- H.
+      reflexivity.
+  Case "b = false".
+    destruct c.
+    SCase "c = true".
+      reflexivity.
+    SCase "c = false".
+      rewrite <- H.
+      reflexivity.
+Qed.  
+
 (** [] *)
 
 (** Coq上に証明の経過を記述する際、それをどのようにフォーマットするべきか、ということについてちゃんとしたルールというものはありません。行が分割され、証明の各段階が階層を持ち、それをインデントで表現するような場合は特にそうです。しかしながら、複数のサブゴールが作成された部分が明示的に[Case]タクティックでマークされた場合は、それを行頭から記述することにします。そうしておけば、証明は読みやすくなり、それ以外でどんな方針のレイアウトが選ばれても、あまり問題になりません。
