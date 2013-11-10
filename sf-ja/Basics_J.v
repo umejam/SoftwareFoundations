@@ -926,7 +926,7 @@ Proof.
       SSCase "p = 0で成り立つ".
         simpl. reflexivity.
       SSCase "pで成り立つなら、p + 1で成り立つ".
-        simpl.rewrite <- IHp. rewrite plus_swap. reflexivity.
+        simpl. rewrite <- IHp. rewrite plus_swap. reflexivity.
       rewrite H. reflexivity.
 Qed.
 (** [] *)
@@ -959,35 +959,62 @@ Qed.
 (** **** 練習問題: ★★★, optional (more_exercises) *)
 (** 紙を何枚か用意して、下に続く定理が(a)簡約と書き換えだけで証明可能か、(b)[destruct]を使ったcase分割が必要になるか、(c)帰納法が必要となるか、のいずれに属すかを、紙の上だけで考えなさい。予測を紙に書いたら、実際に証明を完成させなさい。証明にはCoqを用いてかまいません。最初に紙を使ったのは「初心忘れるべからず」といった理由です。 *)
 
+(* c *)
 Theorem ble_nat_refl : forall n:nat,
   true = ble_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n.
+  reflexivity.
+  simpl. rewrite IHn. reflexivity.
+Qed. 
 
+(* a *)
 Theorem zero_nbeq_S : forall n:nat,
   beq_nat 0 (S n) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  simpl. reflexivity.
+Qed.
 
+(* b *)
 Theorem andb_false_r : forall b : bool,
   andb b false = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b.
+  destruct b.
+  reflexivity.
+  reflexivity.
+Qed.
 
+(* c *)
 Theorem plus_ble_compat_l : forall n m p : nat,
   ble_nat n m = true -> ble_nat (p + n) (p + m) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p H.
+  induction p.
+  simpl. rewrite H. reflexivity.
+  simpl. rewrite IHp. reflexivity.
+Qed.
 
+(* a *)
 Theorem S_nbeq_0 : forall n:nat,
   beq_nat (S n) 0 = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  simpl. reflexivity.
+Qed.
 
+(* c *)
 Theorem mult_1_l : forall n:nat, 1 * n = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n.
+  reflexivity.
+  simpl. rewrite plus_0_r. reflexivity.
+Qed.
 
+(* b *)
 Theorem all3_spec : forall b c : bool,
     orb
       (andb b c)
@@ -995,17 +1022,42 @@ Theorem all3_spec : forall b c : bool,
                (negb c))
   = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c.
+  destruct b.
+  Case "b = true".
+    simpl.
+    destruct c.
+    SCase "c = true".
+      simpl. reflexivity.
+    SCase "c = false".
+      simpl. reflexivity.
+  Case "b = false".
+    simpl. reflexivity.
+Qed.
 
+(* c *)    
 Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction n.
+  simpl. reflexivity.
+  simpl. rewrite <- plus_assoc. rewrite <- IHn. reflexivity.
+Qed.
 
+(* c *)
 Theorem mult_assoc : forall n m p : nat,
   n * (m * p) = (n * m) * p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction n.
+  reflexivity.
+  simpl.
+  rewrite IHn.
+  rewrite mult_plus_distr_r.
+  reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** 練習問題: ★★, optional (plus_swap') *)
