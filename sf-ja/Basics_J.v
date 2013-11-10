@@ -837,7 +837,14 @@ Proof.
 Theorem beq_nat_refl : forall n : nat,
   true = beq_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction n.
+  reflexivity.
+  simpl.
+  rewrite <- IHn.
+  reflexivity.
+Qed.
+
 (** [] *)
 
 
@@ -888,22 +895,62 @@ Proof.
 Theorem plus_swap : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros n m p.
+  rewrite plus_assoc.
+  rewrite plus_assoc.
+  assert (H: n + m = m + n).
+  Case "Proof of assertion".
+    rewrite -> plus_comm. reflexivity.
+  rewrite -> H. reflexivity.
+Qed.  
 
 (** では、乗法が可換であることを証明しましょう。おそらく、補助的な定理を定義し、それを使って全体を証明することになると思います。先ほど証明した[plus_swap]が便利に使えるでしょう。 *)
 
 Theorem mult_comm : forall m n : nat,
  m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  induction n.
+  Case "n = 0で成り立つ".
+    simpl. rewrite mult_0_r. reflexivity.
+  Case "nで成り立つなら、n + 1で成り立つ".
+    simpl. rewrite IHn.
+    induction m.
+    SCase "m = 0で成り立つ".
+      simpl. reflexivity.
+    SCase "mで成り立つなら、m + 1で成り立つ".
+      simpl. rewrite plus_swap. 
+      assert (H: forall p q:nat, p + p * q = p * S q).
+      intros p q.
+      induction p.
+      SSCase "p = 0で成り立つ".
+        simpl. reflexivity.
+      SSCase "pで成り立つなら、p + 1で成り立つ".
+        simpl.rewrite <- IHp. rewrite plus_swap. reflexivity.
+      rewrite H. reflexivity.
+Qed.
 (** [] *)
 
 (** **** 練習問題: ★★, optional (evenb_n__oddb_Sn) *)
 Theorem evenb_n__oddb_Sn : forall n : nat,
   evenb n = negb (evenb (S n)).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n.
+  Case "n = 0で成り立つ".
+    simpl. reflexivity.
+  Case "nで成り立つなら、n + 1で成り立つ".
+    simpl.  rewrite IHn.
+    assert (H: forall a: bool, a = negb (negb a)).
+      intros a.
+      destruct a.
+      SCase "trueの時".
+        simpl. reflexivity.
+      SCase "falseの時".
+        simpl. reflexivity.
+      rewrite <- H.
+      simpl. reflexivity.
+Qed.
 (** [] *)
 
 
