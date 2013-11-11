@@ -1100,7 +1100,48 @@ Qed.
     (c) 最後にbで作成したインクリメント関数と、2進→自然数関数が可換であることを証明しなさい。これを証明するには、bin値をまずインクリメントしたものを自然数に変換したものが、先に自然数変換した後にインクリメントしたものの値と等しいことを証明すればよい。
 *)
 
-(* FILL IN HERE *)
+(* a *)
+Inductive bin : Type :=
+  | BO : bin         (* ゼロ *)
+  | BD : bin -> bin  (* 2倍  *)
+  | BS : bin -> bin. (* 2倍して1を加える *)
+
+(* b *)
+Fixpoint inc_bin (b:bin) : bin :=
+  match b with
+    | BO    => BS BO
+    | BD b' => BS b'
+    | BS b' => BD (inc_bin b')
+  end.
+
+Fixpoint bin2nat (b:bin) : nat :=
+  match b with
+    | BO    => 0
+    | BD b' => double (bin2nat b')
+    | BS b' => S (double (bin2nat b'))
+  end.
+
+(* c *)
+Theorem bit2nat_inc_bin_comm : forall b:bin, bin2nat (inc_bin b) = (bin2nat b) + 1.
+Proof.
+  intros b.
+  induction b.
+  Case "b = BO".
+    simpl. reflexivity.
+  Case "b = BD b'".
+    simpl.
+    rewrite double_plus. rewrite <- plus_1_l. rewrite plus_comm. reflexivity.
+  Case "b = BS b'".
+    simpl.
+    rewrite <- plus_1_l.
+    rewrite double_plus. rewrite double_plus.
+    rewrite IHb.
+    rewrite plus_swap.
+    rewrite plus_assoc. rewrite plus_assoc. 
+    rewrite plus_swap. rewrite plus_assoc.
+    reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** 練習問題: ★★★★★ (binary_inverse) *)
@@ -1110,14 +1151,32 @@ Qed.
     (a) まず自然数を2進数に変換する関数を書きなさい。そして「任意の自然数からスタートし、それを2進数にコンバートし、それをさらに自然数にコンバートすると、スタート時の自然数に戻ることを証明しなさい。
 
 
-    (b) あなたはきっと、逆方向についての証明をしたほうがいいのでは、と考えているでしょう。それは、任意の2進数から始まり、それを自然数にコンバートしてから、また2進数にコンバートし直したものが、元の自然数と一致する、という証明です。しかしながら、この結果はtrueにはなりません。！！その原因を説明しなさい。
+    (b) あなたはきっと、逆方向についての証明をしたほうがいいのでは、と考えているでしょう。それは、任意の2進数から始まり、それを自然数にコンバートしてから、また2進数にコンバートし直したものが、元の2進数と一致する、という証明です。しかしながら、この結果はtrueにはなりません。！！その原因を説明しなさい。
 
 
     (c) 2進数を引数として取り、それを一度自然数に変換した後、また2進数に変換したものを返すnormalize関数を作成し、証明しなさい。
 *)
 
-(* FILL IN HERE *)
+(* a *)
+Fixpoint nat2bin (n:nat) : bin :=
+  match n with
+    | O    => BO
+    | S n' => inc_bin (nat2bin n')                  
+  end.
 
+Theorem nat2bin2nat : forall n:nat, n = bin2nat(nat2bin n).
+Proof.
+  intros n.
+  induction n.
+  Case "n = 0".
+    simpl. reflexivity.
+  Case "n -> n + 1". 
+    simpl. 
+    rewrite bit2nat_inc_bin_comm.
+    rewrite <- IHn. rewrite <- plus_1_l. rewrite plus_comm. reflexivity.
+Qed.
+
+(* b *)
 
 (** **** 練習問題: ★★, optional (decreasing) *)
 (** 各関数の引数のいくつかが"減少的"でなければならない、という要求仕様は、Coqのデザインにおいて基礎となっているものです。特に、そのことによって、Coq上で作成された関数が、どんな入力を与えられても必ずいつか終了する、ということが保障されています。しかし、Coqの"減少的な解析"が「とても洗練されているとまではいえない」ため、時には不自然な書き方で関数を定義しなければならない、ということもあります。
@@ -1126,4 +1185,3 @@ Qed.
 
 (* FILL IN HERE *)
 (** [] *)
-
