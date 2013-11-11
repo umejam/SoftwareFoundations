@@ -1069,7 +1069,14 @@ Qed.
 Theorem plus_swap' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  rewrite plus_assoc.
+  rewrite plus_assoc.
+  replace (m + n) with (n + m).
+  reflexivity.
+  rewrite plus_comm. reflexivity.
+Qed.
+
 (** [] *)
 
 
